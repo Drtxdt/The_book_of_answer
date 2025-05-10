@@ -11,9 +11,11 @@ Your Python version should be Python 3.x or more and you should have the package
 
 我们建议使用Python3，并安装软件包`customtkinter`
 
-Hope you can enjoy our project!
+Hope you can enjoy our project! If you like my project, could you please give me a star? That's really important to me! Thanks!
 
 希望你可以从我们这里获得快乐~
+
+如果你喜欢我的项目，可以为我点亮星星吗？这对我来说真的很重要！感谢！
 
 # How To Use？
 
