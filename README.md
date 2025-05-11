@@ -1,5 +1,5 @@
 # The_book_of_answer
-A small program with GUI which give you a piece of random answer when you are confused or sad
+A small program with GUI which gives you a piece of random answer when you are confused or sad
 
 这里是《答案之书》的python实现！我们采用了`customtkinter`编写了GUI界面，显示答案时有打字机的效果~
 
