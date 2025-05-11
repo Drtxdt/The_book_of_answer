@@ -40,12 +40,13 @@ class App(ct.CTk):
 
         # 初始化配置
         self.title("答案之书")
-        self.geometry("800x600")
-        self.minsize(700, 500)
+        self.geometry("900x700")
+        self.minsize(900, 700)
 
         # 现代感主题配置
-        ct.set_appearance_mode("Dark")
-        ct.set_default_color_theme("dark-blue")
+        self.current_mode = "Dark"
+        ct.set_appearance_mode(self.current_mode)
+        ct.set_default_color_theme("blue")
 
         # 加载自定义字体
         self.custom_font = font.Font(family="Microsoft YaHei", size=14)
@@ -58,49 +59,76 @@ class App(ct.CTk):
 
     def create_widgets(self):
         """构建GUI组件"""
-        # 主容器 - 添加渐变背景
-        main_frame = ct.CTkFrame(
+        # 主容器
+        self.main_frame = ct.CTkFrame(
             self,
             corner_radius=20,
             border_width=0,
-            fg_color=("white", "#1a1a1a"),  # 浅色/深色渐变
+            fg_color=("white", "#1a1a1a")
         )
-        main_frame.pack(padx=20, pady=20, fill="both", expand=True)
+        self.main_frame.pack(padx=20, pady=20, fill="both", expand=True)
+
+        # 模式切换按钮
+        self.mode_btn = ct.CTkButton(
+            self.main_frame,
+            text="Light" if self.current_mode == "Dark" else "Dark",
+            command=self.toggle_mode,
+            width=30,
+            height=30,
+            corner_radius=15,
+            fg_color="transparent",
+            hover_color=("#F0F0F0", "#333333")
+        )
+        self.mode_btn.place(relx=0.95, rely=0.05, anchor="center")
 
         # 标题标签
         self.title_label = ct.CTkLabel(
-            main_frame,
+            self.main_frame,
             text="答案之书",
             font=("Microsoft YaHei", 32, "bold"),
-            text_color="#FFD700",
+            text_color=("#FF6B6B", "#FFD700"),
             pady=20
         )
         self.title_label.pack(pady=(20, 10))
 
         # 使用说明
         self.instructions = ct.CTkLabel(
-            main_frame,
-            text="人人都有困惑迷茫的时候，这个程序可以作为你的参考。\n请你闭上双眼，默念自己的问题30秒，清空大脑，\n点击下面的按钮获取启示",
+            self.main_frame,
+            text="人人都有困惑迷茫的时候，这个程序可以作为您的参考。\n请您闭上双眼，默念自己的问题30秒，清空大脑，\n然后输入问题，点击下面的按钮获取启示",
             font=("Microsoft YaHei", 16),
-            text_color="#A0A0A0",
+            text_color=("#666666", "#A0A0A0"),
             wraplength=600,
             justify="center"
         )
         self.instructions.pack(pady=20)
 
-        # 句子显示框 - 卡片式设计
+        # 问题输入框
+        self.question_entry = ct.CTkEntry(
+            self.main_frame,
+            placeholder_text="在这里写下您的问题...",
+            font=("Microsoft YaHei", 16),
+            width=500,
+            height=40,
+            corner_radius=12,
+            border_color=("#808080", "#404040"),
+            fg_color=("white", "#2B2B2B"),
+            text_color=("black", "white")
+        )
+        self.question_entry.pack(pady=15)
+
+        # 句子显示框
         self.sentence_display = ct.CTkTextbox(
-            main_frame,
+            self.main_frame,
             width=550,
             height=200,
             font=("Microsoft YaHei", 20, "italic"),
             wrap="word",
-            fg_color="transparent",
+            fg_color=("#F8F9FA", "#2B2B2B"),
             border_width=2,
             corner_radius=15,
-            border_color="#404040",
-            scrollbar_button_color="#606060",
-            scrollbar_button_hover_color="#808080"
+            border_color=("#DEE2E6", "#404040"),
+            scrollbar_button_color=("#6C757D", "#495057"),
+            scrollbar_button_hover_color=("#ADB5BD", "#343A40")
         )
         self.sentence_display.pack(pady=20, padx=20, fill="both")
         self.sentence_display.insert("end", "等待你的答案...")
@@ -108,15 +136,19 @@ class App(ct.CTk):
 
         # 加载动画
         self.loading_label = ct.CTkLabel(
-            main_frame,
+            self.main_frame,
             text="",
             font=("Microsoft YaHei", 18),
-            text_color="#808080"
+            text_color=("#6C757D", "#ADB5BD")
         )
 
-        # 操作按钮
-        button_frame = ct.CTkFrame(main_frame, fg_color="transparent")
-        button_frame.pack(pady=20)
+        # 操作按钮（修复布局问题）
+        button_frame = ct.CTkFrame(self.main_frame, fg_color="transparent")
+        button_frame.pack(pady=20, fill="x", padx=50)  # 增加填充和边距
+
+        # 使用grid布局确保按钮正确排列
+        button_frame.grid_columnconfigure(0, weight=1)
+        button_frame.grid_columnconfigure(1, weight=1)
 
         self.random_btn = ct.CTkButton(
             button_frame,
@@ -127,38 +159,65 @@ class App(ct.CTk):
             font=("Microsoft YaHei", 18, "bold"),
             corner_radius=12,
             border_width=2,
-            border_color="#FFD700",
-            fg_color="#2FA572",
-            hover_color="#1E7049",
+            border_color=("#FF6B6B", "#FFD700"),
+            fg_color=("#4ECDC4", "#2FA572"),
+            hover_color=("#45B7B0", "#1E7049"),
             text_color="white"
         )
-        self.random_btn.pack(side="left", padx=20)
+        self.random_btn.grid(row=0, column=0, padx=10)
 
-        # 退出按钮
         quit_btn = ct.CTkButton(
             button_frame,
             text="退出程序",
             command=self.destroy,
             width=120,
             height=40,
-            fg_color="#FF4B4B",
-            hover_color="#D14343",
+            fg_color=("#FF6B6B", "#FF4B4B"),
+            hover_color=("#FF8787", "#D14343"),
             font=("Microsoft YaHei", 14),
             corner_radius=8
         )
-        quit_btn.pack(side="right", padx=20)
+        quit_btn.grid(row=0, column=1, padx=10)
+
+    def toggle_mode(self):
+        """切换日间/夜间模式"""
+        self.current_mode = "Light" if self.current_mode == "Dark" else "Dark"
+        ct.set_appearance_mode(self.current_mode)
+        self.mode_btn.configure(text="Dark" if self.current_mode == "Light" else "Light")
+
+        # 更新组件颜色
+        color_set = {
+            "title": ("#FF6B6B", "#FFD700"),
+            "border": ("#DEE2E6", "#404040"),
+            "button_border": ("#FF6B6B", "#FFD700"),
+            "button_fg": ("#4ECDC4", "#2FA572")
+        }
+
+        self.title_label.configure(text_color=color_set["title"])
+        self.sentence_display.configure(border_color=color_set["border"])
+        self.random_btn.configure(
+            border_color=color_set["button_border"],
+            fg_color=color_set["button_fg"]
+        )
 
     def show_loading_animation(self):
         """显示加载动画"""
         self.loading_label.pack()
-        for i in range(3):
-            self.loading_label.configure(text="思考中" + "." * (i + 1))
+        dots = ["   ", ".  ", ".. ", "..."]
+        for i in range(12):
+            self.loading_label.configure(text="宇宙正在思考" + dots[i % 4])
             self.update()
-            time.sleep(0.5)
+            time.sleep(0.2)
         self.loading_label.pack_forget()
 
     def show_random_sentence(self):
         """显示随机句子的动画效果"""
+        # 检查问题输入
+        if len(self.question_entry.get().strip()) == 0:
+            messagebox.showwarning("提示", "人家还不知道您的问题喵！")
+            self.question_entry.focus()
+            return
+
         # 禁用按钮防止重复点击
         self.random_btn.configure(state="disabled")
 
@@ -172,10 +231,14 @@ class App(ct.CTk):
         # 获取数据
         page, text = self.manager.get_random_sentence()
 
+        # 修复颜色配置问题
+        current_color = "#6C757D" if self.current_mode == "Light" else "#ADB5BD"
+        self.sentence_display.tag_config("fade", foreground=current_color)
+
         # 逐字显示动画
-        self.sentence_display.tag_config("fade", foreground="#808080")
-        for i in range(len(text) + 1):
-            partial_text = text[:i]
+        full_text = f"{page}\n\n{text}"
+        for i in range(len(full_text) + 1):
+            partial_text = full_text[:i]
             self.sentence_display.delete("1.0", "end")
             self.sentence_display.insert("end", partial_text, "fade")
             self.update()
@@ -183,7 +246,7 @@ class App(ct.CTk):
 
         # 最终效果
         self.sentence_display.tag_remove("fade", "1.0", "end")
-        self.sentence_display.configure(text_color="#FFFFFF")
+        self.sentence_display.configure(text_color=("#212529", "#F8F9FA"))
         self.random_btn.configure(state="normal")
 
 
